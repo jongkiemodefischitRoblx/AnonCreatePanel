@@ -9,10 +9,40 @@
 <body>
 <div class="container">
   <h2>Admin Panel</h2>
-  <label>Set Limit Create User:</label>
-  <input type="number" id="userLimit" placeholder="Masukkan limit">
-  <button onclick="saveLimit()">Simpan Limit</button>
+
+  <!-- Set Limit Create Default -->
+  <h3>Set Limit Create Default</h3>
+  <input type="number" id="userLimit" placeholder="Masukkan limit default create panel">
+  <button onclick="saveLimit()">Simpan Limit Default</button>
+
+  <hr>
+
+  <!-- Create User Baru -->
+  <h3>Buat Akun User Baru</h3>
+  <input type="text" id="newUser" placeholder="Username User">
+  <input type="number" id="newUserLimit" placeholder="Limit Create Panel">
+  <label>Pilih Limit RAM</label>
+  <select id="newUserRAM">
+    <option>1GB</option>
+    <option>2GB</option>
+    <option>3GB</option>
+    <option>4GB</option>
+    <option>5GB</option>
+    <option>6GB</option>
+    <option>7GB</option>
+    <option>8GB</option>
+    <option>9GB</option>
+    <option>UNLIMITED</option>
+  </select>
+  <button onclick="createUser()">CREATE USER</button>
+
+  <hr>
+
+  <!-- Server Control -->
+  <h3>Server Control</h3>
+  <button onclick="turnOffServer()">OFF SERVER</button>
 </div>
+
 <script src="script.js"></script>
 </body>
 </html>
