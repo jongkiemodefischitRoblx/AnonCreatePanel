@@ -1,8 +1,10 @@
-// Admin login credentials
+import { config } from './config.js';
+
+// Admin login
 const adminUsername = 'anonsukanenencwe';
 const adminPassword = 'anondongyahahpler';
 
-// Login function (dipakai di index.html)
+// Login function
 function login(){
   const u = document.getElementById('username').value;
   const p = document.getElementById('password').value;
@@ -11,7 +13,6 @@ function login(){
     localStorage.setItem('role','admin');
     window.location.href='admin.html';
   } else {
-    // User biasa
     localStorage.setItem('role','user');
     localStorage.setItem('username', u);
 
@@ -20,24 +21,24 @@ function login(){
       localStorage.setItem('createLeft', users[u].createLeft);
       localStorage.setItem('maxRAM', users[u].maxRAM);
     } else {
-      localStorage.setItem('createLeft', '1'); // default
+      localStorage.setItem('createLeft', '1');
       localStorage.setItem('maxRAM', 'UNLIMITED');
     }
     window.location.href='dashboard.html';
   }
 }
 
-// Simpan limit default
+// Save default limit admin
 function saveLimit(){
   const limit = document.getElementById('userLimit').value;
   localStorage.setItem('userLimit', limit);
   alert('Limit default tersimpan: ' + limit);
 }
 
-// Simpan semua user di LocalStorage
+// Users storage
 if(!localStorage.getItem('users')) localStorage.setItem('users', JSON.stringify({}));
 
-// Create User baru
+// Create user
 function createUser(){
   const username = document.getElementById('newUser').value;
   const limit = document.getElementById('newUserLimit').value;
@@ -68,14 +69,69 @@ function turnOffServer(){
   alert('Server dimatikan!');
 }
 
-// Cek server offline di setiap halaman
+// Proteksi halaman & server offline
 window.addEventListener('load', ()=>{
   if(localStorage.getItem('serverOffline') === 'true'){
     document.body.innerHTML = "<h1 style='text-align:center;margin-top:100px;'>MAAF SERVER DALAM PENGEMBANGAN SILAHKAN COBA LAGI</h1>";
+    return;
   }
+
+  const role = localStorage.getItem('role');
+  const page = window.location.pathname.split("/").pop();
+
+  if(page === 'dashboard.html' || page === 'create.html'){
+    if(!role || role !== 'user'){
+      alert('Akses ditolak. Silahkan login user dulu!');
+      window.location.href = 'index.html';
+    }
+  }
+
+  if(page === 'success.html'){
+    if(!localStorage.getItem('lastCreated')){
+      alert('Belum ada panel dibuat!');
+      window.location.href = 'dashboard.html';
+    }
+  }
+
+  // Load username & createLeft
+  if(document.getElementById('userDisplay')) document.getElementById('userDisplay').innerText = localStorage.getItem('username');
+  if(document.getElementById('createLeft')) document.getElementById('createLeft').innerText = localStorage.getItem('createLeft');
+
+  // Load RAM options di create.html
+  if(document.getElementById('panelRAM')) loadRamOptions();
+
+  // Load success
+  if(document.getElementById('successUsername')) loadSuccess();
 });
 
-// Create Panel untuk user (dipakai di create.html)
+// Load RAM sesuai limit user
+function loadRamOptions(){
+  const ramSelect = document.getElementById('panelRAM');
+  if(!ramSelect) return;
+
+  const maxRAM = localStorage.getItem('maxRAM') || 'UNLIMITED';
+  const ramOptions = ['1GB','2GB','3GB','4GB','5GB','6GB','7GB','8GB','9GB','UNLIMITED'];
+
+  ramSelect.innerHTML = '';
+  for(let ram of ramOptions){
+    if(maxRAM !== 'UNLIMITED'){
+      const maxNum = parseInt(maxRAM);
+      const ramNum = parseInt(ram);
+      if(isNaN(ramNum) || ramNum > maxNum) continue;
+    }
+    const option = document.createElement('option');
+    option.value = ram;
+    option.innerText = ram;
+    ramSelect.appendChild(option);
+  }
+}
+
+// Dashboard: pergi ke create
+function goCreate(){
+  window.location.href='create.html';
+}
+
+// Create panel
 function createPanel(){
   let left = parseInt(localStorage.getItem('createLeft'));
   if(left <= 0){ alert('Limit create habis!'); return; }
@@ -84,7 +140,6 @@ function createPanel(){
   const ram = document.getElementById('panelRAM').value;
   const password = Math.random().toString(36).slice(-10);
 
-  // Validasi RAM sesuai limit user
   let maxRAM = localStorage.getItem('maxRAM') || 'UNLIMITED';
   if(maxRAM !== 'UNLIMITED'){
     const ramNum = parseInt(ram);
@@ -95,7 +150,6 @@ function createPanel(){
     }
   }
 
-  // Panggil API Ptroduclty
   fetch(`https://${config.domain}/api/client/servers`,{
     method:'POST',
     headers:{
@@ -117,7 +171,7 @@ function createPanel(){
   }).catch(err=>alert('Error create panel'));
 }
 
-// Load Success Page
+// Success page
 function loadSuccess(){
   const data = JSON.parse(localStorage.getItem('lastCreated'));
   document.getElementById('successUsername').innerText = data.username;
@@ -126,12 +180,7 @@ function loadSuccess(){
   document.getElementById('createLeft').innerText = localStorage.getItem('createLeft');
 }
 
-// Button Go to Panel
+// Button ke panel
 function goToPanel(){
   window.open(`https://${config.domain}/login`,'_blank');
-}
-
-// Load username & createLeft di halaman dashboard / create
-if(document.getElementById('userDisplay')) document.getElementById('userDisplay').innerText = localStorage.getItem('username');
-if(document.getElementById('createLeft')) document.getElementById('createLeft').innerText = localStorage.getItem('createLeft');
-if(document.getElementById('successUsername')) loadSuccess();
+                                }
