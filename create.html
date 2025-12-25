@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Panel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h2>Halo <span id="userDisplay"></span>, Silahkan Isi Data Panel</h2>
+  <input type="text" id="panelUsername" placeholder="Username Panel">
+  <label>RAM Panel:</label>
+  <select id="panelRAM">
+    <option>1GB</option>
+    <option>2GB</option>
+    <option>3GB</option>
+    <option>4GB</option>
+    <option>5GB</option>
+    <option>6GB</option>
+    <option>7GB</option>
+    <option>8GB</option>
+    <option>9GB</option>
+    <option>UNLIMITED</option>
+  </select>
+  <button onclick="createPanel()">CREATE</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
